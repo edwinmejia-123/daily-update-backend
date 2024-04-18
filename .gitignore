@@ -1,0 +1,23 @@
+# Ignorar archivos de configuración
+.env
+
+# Ignorar módulos de Node.js
+/node_modules
+
+# Ignorar archivos de respaldo de Visual Studio Code
+.vscode/
+
+# Ignorar archivos de respaldo de Windows
+Thumbs.db
+ehthumbs.db
+
+# Ignorar archivos de registro de errores
+*.log
+
+# Ignorar archivos de configuración de usuario
+.idea/
+.DS_Store
+
+# Ignorar archivos de compilación
+/build/
+/dist/
