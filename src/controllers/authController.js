@@ -26,7 +26,7 @@ exports.login = (req, res) => {
   });
 }; */
 
-const createError = require('http-errors');
+/* const createError = require('http-errors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/database');
@@ -58,7 +58,7 @@ exports.login = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-};
+}; */
 /* 
 exports.register = async (req, res) => {
   // Extraer datos del cuerpo de la solicitud
@@ -82,7 +82,7 @@ exports.register = async (req, res) => {
 };
  */
 // Función de registro de usuario
-exports.register = async (req, res, next) => {
+/* exports.register = async (req, res, next) => {
   const { name, email, password } = req.body;
   try {
     // Hashear la contraseña
@@ -97,7 +97,7 @@ exports.register = async (req, res, next) => {
     // Si hay un error, pase al middleware de manejo de errores
     next(error);
   }
-};
+}; */
 
 /* const jwt = require('jsonwebtoken');
 
@@ -116,3 +116,28 @@ exports.verifyToken = (req, res, next) => {
     next();
   });
 }; */
+
+const { User } = require('../models'); // Esto importaría todos tus modelos si los exportas desde un `index.js` en tu carpeta `models`.
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+exports.login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(401).json({ message: 'Credenciales incorrectas' });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ message: 'Credenciales incorrectas' });
+    }
+
+    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.json({ token });
+  } catch (error) {
+    next(error);
+  }
+};

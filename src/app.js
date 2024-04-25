@@ -4,6 +4,18 @@ const authRoutes = require('./routes/authRutas');
 const app = express();
 const port = process.env.PORT || 3000;
 
+const { sequelize } = require('./models');
+
+sequelize.sync({ force: false }) // Utiliza { force: true } SOLO si quieres que reinicie la DB
+  .then(() => {
+    console.log("Tablas creadas y actualizadas");
+    app.listen(3000, () => {
+      console.log("Servidor ejecutándose en el puerto 3000");
+    });
+  })
+  .catch(error => {
+    console.error("Error al sincronizar las tablas de la base de datos:", error);
+  });
 // Middleware para analizar las solicitudes JSON
 app.use(express.json());
 

@@ -2,8 +2,9 @@
   "name": "daily-update-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./src/app.js",
   "scripts": {
+    "dev": "node src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -15,7 +16,10 @@
     "express": "^4.19.2",
     "http-errors": "^2.0.0",
     "joi": "^17.13.0",
+    "jsonwebtoken": "^9.0.2",
     "mysql": "^2.18.1",
+    "mysql2": "^3.9.7",
+    "sequelize": "^6.37.3",
     "validator": "^13.11.0"
   }
 }
