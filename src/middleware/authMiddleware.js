@@ -1,5 +1,6 @@
 // src/middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 const createError = require('http-errors');
 
 const verifyToken = (req, res, next) => {

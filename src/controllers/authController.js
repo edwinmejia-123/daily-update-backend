@@ -120,6 +120,7 @@ exports.verifyToken = (req, res, next) => {
 const { User } = require('../models'); // Esto importaría todos tus modelos si los exportas desde un `index.js` en tu carpeta `models`.
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 exports.login = async (req, res, next) => {
   try {
@@ -141,3 +142,25 @@ exports.login = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.register = async (req, res, next) => {
+  try {
+    const { name, email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.create({ name, email, password: hashedPassword });
+    res.status(201).json({ message: 'Usuario creado exitosamente' });
+  } catch (error) {
+    next(error);
+  }
+}
+
+exports.refreshToken = (req, res) => {
+  const token = jwt.sign({ id: req.user.id, email: req.user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+  res.json({ token });
+}
+
+exports.logout = (req, res) => {
+  // refrescar el token
+  
+  res.json({ message: 'Logout exitoso' });
+}

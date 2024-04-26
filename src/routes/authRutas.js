@@ -8,6 +8,7 @@ const { loginSchema } = require('../models/validation/validationSchemas');
 const router = express.Router();
 
 router.post('/login', validate(loginSchema), authController.login);
-
+router.get('/logout', authMiddleware.verifyToken, authController.logout);
+router.post('/register',validate(loginSchema), authController.register);
 
 module.exports = router;
