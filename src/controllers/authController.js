@@ -117,50 +117,53 @@ exports.verifyToken = (req, res, next) => {
   });
 }; */
 
-const { User } = require('../models'); // Esto importaría todos tus modelos si los exportas desde un `index.js` en tu carpeta `models`.
+const { User } = require('../models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 exports.login = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ where: { email } });
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ where: { email } });
 
-    if (!user) {
-      return res.status(401).json({ message: 'Credenciales incorrectas' });
+        if (!user) {
+            return res.status(401).json({ message: 'Credenciales incorrectas' });
+        }
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ message: 'Credenciales incorrectas' });
+        }
+
+        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.json({ token: `Bearer ${token}` });  // Devuelve el token en formato 'Bearer <token>'
+    } catch (error) {
+        next(error);
     }
-
-    const passwordMatch = await bcrypt.compare(password, user.password);
-    if (!passwordMatch) {
-      return res.status(401).json({ message: 'Credenciales incorrectas' });
-    }
-
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token });
-  } catch (error) {
-    next(error);
-  }
 };
 
 exports.register = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
+    if (await User.findOne({ where: { email } })) {
+      return res.status(400).json({ message: 'El email ya está en uso' });
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
     await User.create({ name, email, password: hashedPassword });
     res.status(201).json({ message: 'Usuario creado exitosamente' });
   } catch (error) {
-    next(error);
+    return res.status(500).json({ message: 'Error interno del servidor' });
   }
 }
 
-exports.refreshToken = (req, res) => {
+exports.refreshToken = (id, email) => {
   const token = jwt.sign({ id: req.user.id, email: req.user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
   res.json({ token });
 }
 
 exports.logout = (req, res) => {
   // refrescar el token
+  const token = jwt.sign({ id: req.user.id, email: req.user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
   
-  res.json({ message: 'Logout exitoso' });
 }

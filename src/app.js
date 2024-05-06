@@ -1,7 +1,8 @@
 // app.js
 require('dotenv').config();
 const express = require('express');
-const authRoutes = require('./routes/authRutas');
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -22,6 +23,9 @@ app.use(express.json());
 
 // Rutas de autenticación
 app.use('/auth', authRoutes);
+
+// Rutas de empleados (protegidas por autenticación) y por role de empleados
+app.use('/user', userRoutes);
 
 app.use((error, req, res, next) => {
   // Log del error para el servidor

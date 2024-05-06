@@ -12,14 +12,24 @@ const Employee = require('./employee')(sequelize);
 const Company = require('./company')(sequelize);
 const EmployeeCompany = require('./employeeCompany')(sequelize);
 const Report = require('./report')(sequelize);
-const Informe = require('./informe')(sequelize);
+const Invoice = require('./Invoice')(sequelize);
 
 User.belongsTo(Role, { foreignKey: 'roleId' });
+Role.hasMany(User, { foreignKey: 'roleId' });
+
 Employee.belongsTo(User, { foreignKey: 'userId' });
+
+Employee.hasMany(EmployeeCompany, { foreignKey: 'employeeId' });
 EmployeeCompany.belongsTo(Employee, { foreignKey: 'employeeId' });
+
+Company.hasMany(EmployeeCompany, { foreignKey: 'companyId' });
 EmployeeCompany.belongsTo(Company, { foreignKey: 'companyId' });
+
+EmployeeCompany.hasMany(Report, { foreignKey: 'employeeCompanyId' });
 Report.belongsTo(EmployeeCompany, { foreignKey: 'employeeCompanyId' });
-Informe.belongsTo(Company, { foreignKey: 'companyId' });
+
+Company.hasMany(Invoice, { foreignKey: 'companyId' });
+Invoice.belongsTo(Company, { foreignKey: 'companyId' });
 
 module.exports = {
   sequelize,
@@ -29,5 +39,5 @@ module.exports = {
   Company,
   EmployeeCompany,
   Report,
-  Informe
+  Invoice
 };
